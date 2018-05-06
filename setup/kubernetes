@@ -56,7 +56,6 @@ else
     fi
     "${ROOT_PREFFIX}" ${pkgManager} libvirt-bin qemu-kvm
     "${ROOT_PREFFIX}" usermod -a -G libvirt $(whoami)
-    newgrp libvirtd
     curl -sSLO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && \
         "${ROOT_PREFFIX}" chmod +x docker-machine-driver-kvm2 && \
         "${ROOT_PREFFIX}" sudo mv docker-machine-driver-kvm2 /usr/local/bin/
@@ -84,7 +83,7 @@ else
 fi
 
 if [[ "${MINIKUBE_PATH}" ]]; then
-    MINIKUBE_PKG_MSG=$(echo Found $(minikube version))
+    MINIKUBE_PKG_MSG=$(echo Found $(sg libvirtd -c "minikube version"))
     logger 'INFO' "${MINIKUBE_PKG_MSG}"
 else
     logger 'INFO' 'Could not find minikube installation, triggering installation..'
@@ -92,18 +91,16 @@ else
     curl -sSLo minikube https://storage.googleapis.com/minikube/releases/"${MINIKUBE_CLIENT_VERSION}"/minikube-linux-amd64 && \
         "${ROOT_PREFFIX}" chmod +x minikube && \
         "${ROOT_PREFFIX}" mv minikube /usr/local/bin/
-    MINIKUBE_PKG_MSG=$(echo Installed $(minikube version))
+    MINIKUBE_PKG_MSG=$(echo Installed $(sg libvirtd -c "minikube version"))
     logger 'SUCCESS' "${MINIKUBE_PKG_MSG}"
 fi
 
 # == K8S CLUSTER SETUP ==
-minikube status | grep 'cluster: Running' >/dev/null
-if [[ "$?" != '0' ]]; then
-    logger 'INFO' 'Ready to start minikube k8s local cluster'
-    minikube start --vm-driver "${MINIKUBE_DRIVER}"
-    kubectl cluster-info
-fi
-MINIKUBE_IP=$(minikube ip)
+logger 'INFO' 'Ready to start minikube k8s local cluster'
+sg libvirtd -c "minikube start --vm-driver ${MINIKUBE_DRIVER}"
+kubectl cluster-info
+
+MINIKUBE_IP=$(sg libvirtd -c "minikube ip")
 logger 'INFO' "You can access the cluster's Dashboard typing the URL: http://${MINIKUBE_IP}:${MINIKUBE_DASHBOARD_PORT}"
 
 # == K8S CLUSTER BASIC CONFIGURATION ==
@@ -126,7 +123,7 @@ for app in "${KUBE_APPS}"; do
     fi
 
     if [[ "${app}" == 'wordpress-sample' ]]; then
-        WORKDPRESS_SAMPLE_MSG=$(echo $(minikube service wordpress -n "${KUBERNETES_DEPLOY_NAMESPACE}" --url))
-        logger 'INFO' "Exposed wordpress example application: ${WORKDPRESS_SAMPLE_MSG}"
+        WORDPRESS_SAMPLE_MSG=$(echo $(sg libvirtd -c"minikube service wordpress -n ${KUBERNETES_DEPLOY_NAMESPACE} --url"))
+        logger 'INFO' "Exposed wordpress example application: ${WORDPRESS_SAMPLE_MSG}"
     fi
 done
