@@ -22,6 +22,8 @@ To run the app, just:
 
 It will run a kubernetes cluster under kvm driver and exposes the URL to be tested locally from a demonstration Wordpress application.  
 
+The first execution can take some time due to the virtual machine creation.  
+
 ## Security
 
 It's highly recommended that **you do not** use tanker in production environments. The purpose of this project is to setup a development environment the quickest way. After that the deployment of your POC must be done with a secure Kubernetes Cluster using one of the following tools: `kops` or `kubeadm`  
