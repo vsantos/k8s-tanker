@@ -54,20 +54,13 @@ else
         logger 'INFO' 'Deleting ~/.minikube directory to prevent erros from previous installations'
         rm -rf ~/.minikube
     fi
-    group=libvirtd
     "${ROOT_PREFFIX}" ${pkgManager} libvirt-bin qemu-kvm
-    "${ROOT_PREFFIX}" usermod -a -G "${group}" $(whoami)
+    "${ROOT_PREFFIX}" usermod -a -G libvirt $(whoami)
+    newgrp libvirtd
     curl -sSLO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && \
         "${ROOT_PREFFIX}" chmod +x docker-machine-driver-kvm2 && \
         "${ROOT_PREFFIX}" sudo mv docker-machine-driver-kvm2 /usr/local/bin/
     KVM_PKG_MSG=$(echo 'Installed docker-machine-driver-kvm2 [kvm2]')
-
-    # Login as libvirtd without restarting the bash session
-    if [ $(id -gn) != "${group}" ]; then
-        exec sg $group "$0 $*"
-    fi
-
-    newgrp libvirtd
 
     logger 'SUCCESS' "${KVM_PKG_MSG}"
 fi
@@ -107,7 +100,7 @@ fi
 minikube status | grep 'cluster: Running' >/dev/null
 if [[ "$?" != '0' ]]; then
     logger 'INFO' 'Ready to start minikube k8s local cluster'
-    minikube start --vm-driver="${MINIKUBE_DRIVER}"
+    minikube start --vm-driver "${MINIKUBE_DRIVER}"
     kubectl cluster-info
 fi
 MINIKUBE_IP=$(minikube ip)
