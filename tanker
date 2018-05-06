@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo '''
+TANKER - k8s application poc builder
+
+     .  o ..                  
+     o . o o.o                
+          ...oo               
+            __[]__            
+         __|_o_o_o\__         
+         \""""""""""/         
+          \. ..  . /          
+    ^^^^^^^^^^^^^^^^^^^^^^
+
+====
+'''
+
+CONFIG_PATH='config'
+SETUP_PATH='setup'
+
+. ./"${CONFIG_PATH}"/environment.sh
+
+. ./"${SETUP_PATH}"/kubernetes

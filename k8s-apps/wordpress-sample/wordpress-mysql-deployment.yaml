@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ name: wordpress-mysql-deployment
+spec:
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       name: wordpress-mysql
+   spec:
+     serviceAccountName: default
+     containers:
+     - name: wordpress-mysql
+       image: mysql:5.6
+       imagePullPolicy: Always
+       envFrom:
+       - secretRef:
+           name: wordpress-mysql-secrets
+       ports:
+       - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-mysql
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      nodePort: 31704
+      port: 3306
+      targetPort: 3306
+  selector:
+    name: wordpress-mysql

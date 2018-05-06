@@ -1,0 +1,133 @@
+#!/bin/bash
+
+# Importing global functions and environment variables configuration
+CONFIG_PATH='./config'
+. ./"${CONFIG_PATH}"/functions.sh
+. ./"${CONFIG_PATH}"/environment.sh
+
+echo $KUBE_APPS
+
+if [[ "${DEBUG}" == 'true' ]]; then
+    set -x
+fi
+
+if [[ "${EUID}" != '0' ]]; then
+    ROOT_PREFFIX='sudo'
+fi
+
+trap graceful_terminate SIGINT
+trap graceful_terminate SIGTERM
+
+if [[ -f '/etc/redhat-release' ]]; then
+    pkgManagerUpdate=''
+    pkgManager="${ROOT_PREFFIX} yum install -y"
+    logger 'ERROR' 'yum package manager not supported yet'
+    return 1
+elif [[ -f '/etc/debian_version' ]]; then
+    logger 'INFO' 'Found Debian based package manager'
+    pkgManagerUpdate='apt-get update'
+    "${ROOT_PREFFIX}" ${pkgManagerUpdate} >/dev/null
+    pkgManager="${ROOT_PREFFIX} apt-get install -y"
+elif [[ -f '/etc/arch-release' ]]; then
+    pkgManagerUpdate='apk update'
+    "${ROOT_PREFFIX}" ${pkgManagerUpdate}
+    pkgManager="${ROOT_PREFFIX} apk add"
+    logger 'ERROR' 'apk package manager not supported yet'
+    return 1
+else
+    logger 'ERROR' 'Could not find a valid *nix OS package manager'
+    exit 1
+fi
+
+# Installation common OS packages
+"${ROOT_PREFFIX}" ${pkgManager} curl apt-transport-https >/dev/null
+
+# == K8S ENVIRONMENT SETUP ==
+
+# Handling kvm installation if not present
+KVM2_PATH=$(command -v docker-machine-driver-kvm2)
+
+if [[ "${KVM2_PATH}" ]]; then
+    KVM_PKG_MSG=$(echo Found kvm2 installation)
+    logger 'INFO' "${KVM_PKG_MSG}"
+else
+    logger 'INFO' 'Could not find docker-machine-driver-kvm2 (kvm2), triggering installation..'
+    if [[ -d ~/.minikube ]]; then
+        logger 'INFO' 'Deleting ~/.minikube directory to prevent erros from previous installations'
+        rm -rf ~/.minikube
+    fi
+    "${ROOT_PREFFIX}" ${pkgManager} libvirt-bin qemu-kvm
+    "${ROOT_PREFFIX}" usermod -a -G libvirtd $(whoami)
+    curl -sSLO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && \
+        "${ROOT_PREFFIX}" chmod +x docker-machine-driver-kvm2 && \
+        "${ROOT_PREFFIX}" sudo mv docker-machine-driver-kvm2 /usr/local/bin/
+    KVM_PKG_MSG=$(echo Installed docker-machine-driver-kvm2 (kvm2))
+    newgrp libvirtd
+    logger 'SUCCESS' "${KVM_PKG_MSG}"
+fi
+
+# Handling local k8s-cluster installation if not present
+KUBECTL_PATH=$(command -v kubectl)
+MINIKUBE_PATH=$(command -v minikube)
+
+if [[ "${KUBECTL_PATH}" ]]; then
+    KUBECTL_PKG_MSG=$(echo Found kubectl client-binary: $(kubectl version | cut -d ':' -f5 | cut -d ',' -f1 | head -n 1))
+    logger 'INFO' "${KUBECTL_PKG_MSG}"
+else
+    logger 'INFO' 'Could not find kubectl client-binary, triggering installation..'
+    KUBECTL_CLIENT_VERSION='v1.10.2'
+    curl -sSLO \
+        https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_CLIENT_VERSION}"/bin/linux/amd64/kubectl
+    "${ROOT_PREFFIX}" chmod +x kubectl
+    "${ROOT_PREFFIX}" mv kubectl /usr/local/bin/kubectl
+    KUBECTL_PKG_MSG=$(echo Installed kubectl client: $(kubectl version | cut -d ':' -f5 | cut -d ',' -f1 | head -n 1))
+    logger 'SUCCESS' "${KUBECTL_PKG_MSG}"
+fi
+
+if [[ "${MINIKUBE_PATH}" ]]; then
+    MINIKUBE_PKG_MSG=$(echo Found $(minikube version))
+    logger 'INFO' "${MINIKUBE_PKG_MSG}"
+else
+    logger 'INFO' 'Could not find minikube installation, triggering installation..'
+    MINIKUBE_CLIENT_VERSION='v0.26.1'
+    curl -sSLo minikube https://storage.googleapis.com/minikube/releases/"${MINIKUBE_CLIENT_VERSION}"/minikube-linux-amd64 && \
+        "${ROOT_PREFFIX}" chmod +x minikube && \
+        "${ROOT_PREFFIX}" mv minikube /usr/local/bin/
+    MINIKUBE_PKG_MSG=$(echo Installed $(minikube version))
+    logger 'SUCCESS' "${MINIKUBE_PKG_MSG}"
+fi
+
+# == K8S CLUSTER SETUP ==
+minikube status | grep 'cluster: Running' >/dev/null
+if [[ "$?" != '0' ]]; then
+    logger 'INFO' 'Ready to start minikube k8s local cluster'
+    minikube start --vm-driver="${MINIKUBE_DRIVER}"
+    kubectl cluster-info
+fi
+MINIKUBE_IP=$(minikube ip)
+logger 'INFO' "You can access the cluster's Dashboard typing the URL: http://${MINIKUBE_IP}:${MINIKUBE_DASHBOARD_PORT}"
+
+# == K8S CLUSTER BASIC CONFIGURATION ==
+kubectl get namespaces | grep "${KUBERNETES_DEPLOY_NAMESPACE}" >/dev/null
+if [[ "$?" == 1 ]]; then
+    logger 'INFO' "Creating default deployment namespace: ${KUBERNETES_DEPLOY_NAMESPACE}"
+    kubectl create namespace "${KUBERNETES_DEPLOY_NAMESPACE}"
+fi
+
+# == K8S CLUSTER INSTALLING APPS ==
+KUBE_APPS_PATH='./k8s-apps'
+for app in "${KUBE_APPS}"; do
+    if [[ -d "${KUBE_APPS_PATH}"/"${app}" ]]; then
+        logger 'INFO' "Deploying '${app}' app..."
+        for yaml in $(ls "${KUBE_APPS_PATH}"/"${app}"); do
+            kubectl apply -f "${KUBE_APPS_PATH}"/"${app}"/"${yaml}" -n "${KUBERNETES_DEPLOY_NAMESPACE}" | grep -v 'unchanged'
+        done
+    else
+        logger 'ERROR' "Could not find '${app}' directory"
+    fi
+
+    if [[ "${app}" == 'wordpress-sample' ]]; then
+        WORKDPRESS_SAMPLE_MSG=$(echo $(minikube service wordpress -n "${KUBERNETES_DEPLOY_NAMESPACE}" --url))
+        logger 'INFO' "Exposed wordpress example application: ${WORKDPRESS_SAMPLE_MSG}"
+    fi
+done
