@@ -57,7 +57,6 @@ else
     "${ROOT_PREFFIX}" libvirt
     "${ROOT_PREFFIX}" ${pkgManager} libvirt-bin qemu-kvm
     "${ROOT_PREFFIX}" usermod -a -G libvirt $(whoami)
-    if [[ -d /var/run/ ]]
     curl -sSLO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && \
         "${ROOT_PREFFIX}" chmod +x docker-machine-driver-kvm2 && \
         "${ROOT_PREFFIX}" sudo mv docker-machine-driver-kvm2 /usr/local/bin/
