@@ -8,7 +8,7 @@ The idea behind it is: place your k8s *yamls into `k8s-apps/${YOUR-APP}/` and be
 
 Make sure that your machine follows the requisites:
 
-- A *nix system running an apt-compatible OS, e.g. Ubuntu or Debian
+- Ubuntu 18.04 or superior (there is a libvirt's group limitation that requires specific configuration by version, so it's better to stick with it)
 - 3 GB or more of RAM (it needs to handle the virtualization as well)
 - 2 CPUs or more
 
