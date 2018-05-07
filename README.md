@@ -22,6 +22,8 @@ To run the app, just:
 
 It will run a kubernetes cluster under kvm driver and exposes the URL to be tested locally from a demonstration Wordpress application.  
 
+The first execution can take some time due to the virtual machine creation.  
+
 ## Security
 
 It's highly recommended that **you do not** use tanker in production environments. The purpose of this project is to setup a development environment the quickest way. After that the deployment of your POC must be done with a secure Kubernetes Cluster using one of the following tools: `kops` or `kubeadm`  
@@ -29,3 +31,17 @@ It's highly recommended that **you do not** use tanker in production environment
 ## Troubleshooting  
 
 In order to run the app and follow line by line what happened, just set the environment variable `DEBUG` located at `config/environment.sh` as true. The next `./tanker` will output what is going on *under the hood*  
+
+To wipe every minikube data due any additional problems when creating/running the cluster you can:
+
+```
+$ minikube stop # if started
+$ minikube delete
+$ rm -rf ~/.minikube
+```
+
+Then you can ask `./tanker` to create it again
+
+## Why not kubeadm?
+
+You must be wondering why the project just not use `kubeadm` to install a real cluster instead of a virtual one using `minikube`. The `kubeadm` may need some additional intrusive configuration such as kernel configurations and network changes which could break any other part of the system if used in a dev machine instead of a server. To keep it simple, the `minikube` handles the situation. 
