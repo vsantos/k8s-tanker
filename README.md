@@ -6,7 +6,7 @@ The idea behind it is: place your k8s *yamls into `k8s-apps/${YOUR-APP}/` and be
 
 ## Before you begin
 
-Make sure that your machinne follows the requisites:
+Make sure that your machine follows the requisites:
 
 - A *nix system running an apt-compatible OS, e.g. Ubuntu or Debian
 - 3 GB or more of RAM (it needs to handle the virtualization as well)
