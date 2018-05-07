@@ -113,7 +113,8 @@ fi
 
 # == K8S CLUSTER INSTALLING APPS ==
 KUBE_APPS_PATH='./k8s-apps'
-for app in "${KUBE_APPS}"; do
+# SC2066
+for app in ${KUBE_APPS}; do
     if [[ -d "${KUBE_APPS_PATH}"/"${app}" ]]; then
         logger 'INFO' "Deploying '${app}' app..."
         for yaml in $(ls "${KUBE_APPS_PATH}"/"${app}"); do
