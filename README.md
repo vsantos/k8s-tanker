@@ -1,7 +1,7 @@
 # Tanker - K8S Applications POC builder
 
 <p align="center">
-  <img width="366" height="458" src="docs/imgs/tanker.png">
+  <img width="748" height="550" src="docs/imgs/tanker.png">
 </p>
 
 Tanker is a small project with the purpose of running in a local kubernetes cluster provided by [minikube](https://kubernetes.io/docs/getting-started-guides/minikube/#quickstart) to test your dockerized applications without suffering to configuring or setting up your environment.  
@@ -25,7 +25,7 @@ To run the app, just:
 `./tanker`  
 
 <p align="center">
-  <img width="748" height="551" src="docs/imgs/wordpress.png">
+  <img width="683" height="340" src="docs/imgs/wordpress.png">
 </p>
 
 It will run a kubernetes cluster under kvm driver and exposes the URL to be tested locally from a demonstration Wordpress application.  
@@ -37,7 +37,7 @@ The first execution can take some time due to the virtual machine creation.
 You don't have to stick to the default 'wordpress' example project, to deploy your own kubernetes' application follow these steps:  
 
 - create a dir located at `k8s-apps/` with the needed *.yamls
-- add your app to the list of existent ones (`KUBE_APPS`) located at `config/environment.sh`  
+- add your app the list of apps (`KUBE_APPS`) located at `config/environment.sh`  
 - run `./tanker` to create the new app  
 
 Tanker will not give to you the exposed URL because it can vary due to specific configuration for you services. To check by yourself:  
