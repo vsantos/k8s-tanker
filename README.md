@@ -4,7 +4,7 @@
   <img width="748" height="550" src="docs/imgs/tanker.png">
 </p>
 
-Tanker is a small project with the purpose of running in a local kubernetes cluster provided by [minikube](https://kubernetes.io/docs/getting-started-guides/minikube/#quickstart) to test your dockerized applications without suffering to configuring or setting up your environment.  
+Tanker is a small project with the purpose of running in a local kubernetes cluster provided by [minikube](https://kubernetes.io/docs/getting-started-guides/minikube/#quickstart) your dockerized test-applications without suffering to configuring or setting up your environment.  
 
 The idea behind it is: place your k8s *yamls into `k8s-apps/${YOUR-APP}/` and be happy! :D  
 
