@@ -25,7 +25,7 @@ To run the app, just:
 `./tanker`  
 
 <p align="center">
-  <img width="683" height="340" src="docs/imgs/wordpress.png">
+  <img width="748" height="551" src="docs/imgs/wordpress.png">
 </p>
 
 It will run a kubernetes cluster under kvm driver and exposes the URL to be tested locally from a demonstration Wordpress application.  
