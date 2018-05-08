@@ -34,7 +34,7 @@ The first execution can take some time due to the virtual machine creation.
 
 ## Running my own apps
 
-You don't have to stick to the default 'wordpress' example project, to deploy your own kubernetes' application follow these steps:  
+You don't have to stick to the default 'wordpress' example project, to deploy your own kubernetes' applications follow these steps:  
 
 - create a dir located at `k8s-apps/` with the needed *.yamls
 - add your app the list of apps (`KUBE_APPS`) located at `config/environment.sh`  
