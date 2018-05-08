@@ -43,8 +43,8 @@ fi
 # == K8S ENVIRONMENT SETUP ==
 
 # Handling virtualbodx installation if not present
-KUBECTL_PATH=$(command -v virtualbox)
-if [[ "${KUBECTL_PATH}" ]]; then
+VIRTUALBOX_PATH=$(command -v VBoxManage)
+if [[ "${VIRTUALBOX_PATH}" ]]; then
     logger 'INFO' 'Found virtualbox binary, skipping installation'
 else
     logger 'INFO' 'Could not find virtualbox, triggering installation...'
@@ -114,5 +114,7 @@ for app in ${KUBE_APPS}; do
     if [[ "${app}" == 'wordpress-sample' ]]; then
         WORDPRESS_SAMPLE_MSG=$(echo $(minikube service wordpress -n ${KUBERNETES_DEPLOY_NAMESPACE} --url))
         logger 'INFO' "Exposed wordpress example application: ${WORDPRESS_SAMPLE_MSG}"
+        WORDPRESS_SAMPLE_PORT=$(echo "${WORDPRESS_SAMPLE_MSG}" | cut -d ':' -f3)
+        fowardPortHostMinikube "${WORDPRESS_SAMPLE_PORT}"
     fi
 done
