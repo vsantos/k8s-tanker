@@ -28,7 +28,7 @@ To run the app, just:
   <img width="683" height="340" src="docs/imgs/wordpress.png">
 </p>
 
-It will run a kubernetes cluster under kvm driver and exposes the URL to be tested locally from a demonstration Wordpress application.  
+It will run a kubernetes cluster under virtualbox driver and exposes the URL to be tested locally from a demonstration Wordpress application.  
 
 The first execution can take some time due to the virtual machine creation.  
 
@@ -61,6 +61,10 @@ $ rm -rf ~/.minikube
 ```
 
 Then you can ask `./tanker` to create it again
+
+## Why not 'kvm' driver?
+
+The minikube driver (for virtual machines) `kvm` have multiple settings for several different distributions which could be impractical to maintain. Using the 'virtualbox' one instead can add one more level of flexibility in the future when `tanker` became "runnable" to multiple Linux distributions.
 
 ## Why not kubeadm?
 
