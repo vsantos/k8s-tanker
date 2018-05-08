@@ -74,5 +74,4 @@ You must be wondering why the project just not use `kubeadm` to install a real c
 
 The project is still under development, and it needs to handle a few things for the future:  
 
-- The k8s cluster runs into a virtual machine that runs in a different subnet from the host, which means that exposing kubernetes' pods to the world can be a little difficult because demands an internal routing forward and will not be done automatically.  
-- We are working with the possibility to solve the DNS locally automatically instead of just using the virtual machine IP from commands like: `minikube service ${SERVICE_NAME} --url`  
+- We are working with the possibility to run the app in a `sandbox-mode`, which is basically run it in a specific VM using Vagrant
