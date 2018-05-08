@@ -37,7 +37,7 @@ The first execution can take some time due to the virtual machine creation.
 You don't have to stick to the default 'wordpress' example project, to deploy your own kubernetes' application follow these steps:  
 
 - create a dir located at `k8s-apps/` with the needed *.yamls
-- add your app the list of apps (`KUBE_APPS`) located at `config/environment.sh`  
+- add your app to the list of existent ones (`KUBE_APPS`) located at `config/environment.sh`  
 - run `./tanker` to create the new app  
 
 Tanker will not give to you the exposed URL because it can vary due to specific configuration for you services. To check by yourself:  
