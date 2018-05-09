@@ -42,27 +42,16 @@ fi
 
 # == K8S ENVIRONMENT SETUP ==
 
-# Handling kvm installation if not present
-KVM2_PATH=$(command -v docker-machine-driver-kvm2)
-
-if [[ "${KVM2_PATH}" ]]; then
-    KVM_PKG_MSG=$(echo Found kvm2 installation)
-    logger 'INFO' "${KVM_PKG_MSG}"
+# Handling virtualbodx installation if not present
+VIRTUALBOX_PATH=$(command -v VBoxManage)
+if [[ "${VIRTUALBOX_PATH}" ]]; then
+    logger 'INFO' 'Found virtualbox binary, skipping installation'
 else
-    logger 'INFO' 'Could not find docker-machine-driver-kvm2 (kvm2), triggering installation..'
-    if [[ -d ~/.minikube ]]; then
-        logger 'INFO' 'Deleting ~/.minikube directory to prevent erros from previous installations'
-        rm -rf ~/.minikube
-    fi
-    "${ROOT_PREFFIX}" libvirt
-    "${ROOT_PREFFIX}" ${pkgManager} libvirt-bin qemu-kvm
-    "${ROOT_PREFFIX}" usermod -a -G libvirt $(whoami)
-    curl -sSLO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && \
-        "${ROOT_PREFFIX}" chmod +x docker-machine-driver-kvm2 && \
-        "${ROOT_PREFFIX}" sudo mv docker-machine-driver-kvm2 /usr/local/bin/
-    KVM_PKG_MSG=$(echo 'Installed docker-machine-driver-kvm2 [kvm2]')
-
-    logger 'SUCCESS' "${KVM_PKG_MSG}"
+    logger 'INFO' 'Could not find virtualbox, triggering installation...'
+    wget https://download.virtualbox.org/virtualbox/5.2.10/virtualbox-5.2_5.2.10-122088~Ubuntu~trusty_amd64.deb
+    "${ROOT_PREFFIX}" dpkg -i virtualbox-*.deb
+    rm virtualbox-*.deb
+    logger 'SUCCESS' 'Virtualbox installed'
 fi
 
 # Handling local k8s-cluster installation if not present
@@ -84,7 +73,7 @@ else
 fi
 
 if [[ "${MINIKUBE_PATH}" ]]; then
-    MINIKUBE_PKG_MSG=$(echo Found $(sudo sg libvirt -c "minikube version"))
+    MINIKUBE_PKG_MSG=$(echo Found $(minikube version))
     logger 'INFO' "${MINIKUBE_PKG_MSG}"
 else
     logger 'INFO' 'Could not find minikube installation, triggering installation..'
@@ -92,16 +81,16 @@ else
     curl -sSLo minikube https://storage.googleapis.com/minikube/releases/"${MINIKUBE_CLIENT_VERSION}"/minikube-linux-amd64 && \
         "${ROOT_PREFFIX}" chmod +x minikube && \
         "${ROOT_PREFFIX}" mv minikube /usr/local/bin/
-    MINIKUBE_PKG_MSG=$(echo Installed $(sudo sg libvirt -c "minikube version"))
+    MINIKUBE_PKG_MSG=$(echo Installed $(minikube version))
     logger 'SUCCESS' "${MINIKUBE_PKG_MSG}"
 fi
 
 # == K8S CLUSTER SETUP ==
 logger 'INFO' 'Ready to start minikube k8s local cluster'
-sudo sg libvirt -c "minikube start --vm-driver ${MINIKUBE_DRIVER}"
+minikube start --vm-driver ${MINIKUBE_DRIVER}
 kubectl cluster-info
 
-MINIKUBE_IP=$(sudo sg libvirt -c "minikube ip")
+MINIKUBE_IP=$(minikube ip)
 logger 'INFO' "You can access the cluster's Dashboard typing the URL: http://${MINIKUBE_IP}:${MINIKUBE_DASHBOARD_PORT}"
 
 # == K8S CLUSTER BASIC CONFIGURATION ==
@@ -125,7 +114,13 @@ for app in ${KUBE_APPS}; do
     fi
 
     if [[ "${app}" == 'wordpress-sample' ]]; then
-        WORDPRESS_SAMPLE_MSG=$(echo $(sudo sg libvirt -c "minikube service wordpress -n ${KUBERNETES_DEPLOY_NAMESPACE} --url"))
+        WORDPRESS_SAMPLE_MSG=$(echo $(minikube service wordpress -n ${KUBERNETES_DEPLOY_NAMESPACE} --url))
         logger 'INFO' "Exposed wordpress example application: ${WORDPRESS_SAMPLE_MSG}"
+        WORDPRESS_SAMPLE_PORT=$(echo "${WORDPRESS_SAMPLE_MSG}" | cut -d ':' -f3)
+        fowardPortHostMinikube 'wordpress' "${WORDPRESS_SAMPLE_PORT}"
+    fi
+
+    if [[ "${EXPOSE_DASHBOARD}" ]]; then
+        fowardPortHostMinikube 'dashboard' "${MINIKUBE_DASHBOARD_PORT}"
     fi
 done
