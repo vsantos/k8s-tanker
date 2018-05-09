@@ -8,7 +8,7 @@ Tanker is a small project with the purpose of running in a local kubernetes clus
 
 The idea behind it is: place your k8s *yamls into `k8s-apps/${YOUR-APP}/` and be happy! :D  
 
-## Tanker Overview
+## Tanker Diagram Overview
 
 The following diagram makes a little more clean the interaction between internal and external clients with the application it self + k8s-cluster
 
@@ -23,6 +23,7 @@ Make sure that your machine follows the requisites:
 - Linux Mint 18.3 - Sylvia (100% working scenario for a fresh installation)
 - 4 GB or more of RAM (it needs to handle the virtualization and k8s-apps as well)
 - 2 CPUs or more
+- Network connection
 
 Ensure that you have `docker` both client and version `1.13.x` or superior  
 
