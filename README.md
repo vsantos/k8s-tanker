@@ -8,6 +8,14 @@ Tanker is a small project with the purpose of running in a local kubernetes clus
 
 The idea behind it is: place your k8s *yamls into `k8s-apps/${YOUR-APP}/` and be happy! :D  
 
+## Tanker Overview
+
+The following diagram makes a little more clean the interaction between internal and external clients with the application it self + k8s-cluster
+
+<p align="center">
+  <img width="726" height="301" src="docs/imgs/diagram.png">
+</p>
+
 ## Before you begin
 
 Make sure that your machine follows the requisites:
