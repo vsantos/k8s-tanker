@@ -117,8 +117,8 @@ for app in ${KUBE_APPS}; do
         WORDPRESS_SAMPLE_MSG=$(echo $(minikube service wordpress -n ${KUBERNETES_DEPLOY_NAMESPACE} --url))
         logger 'INFO' "Exposed wordpress example application: ${WORDPRESS_SAMPLE_MSG}"
         WORDPRESS_SAMPLE_PORT=$(echo "${WORDPRESS_SAMPLE_MSG}" | cut -d ':' -f3)
-        fowardPortHostMinikube "${WORDPRESS_SAMPLE_PORT}"
+        fowardPortHostMinikube 'wordpress' "${WORDPRESS_SAMPLE_PORT}"
     fi
 
-    fowardPortHostMinikube "${MINIKUBE_DASHBOARD_PORT}"
+    fowardPortHostMinikube 'dashboard' "${MINIKUBE_DASHBOARD_PORT}"
 done
