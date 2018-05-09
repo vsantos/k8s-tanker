@@ -53,6 +53,10 @@ Tanker will not give to you the exposed URL because it can vary due to specific 
 
 `minikube service ${MY_SERVICE_NAME} --url`  
 
+## Exposing Kubernetes Dashboard
+
+By the default, the kubernetes dashboard will be exposed to the host as `localhost:3000` to simplify the usage. To disable this option just set `EXPOSE_DASHBOARD` environment variable as false at `config/environment.sh`  
+
 ## Security
 
 It's highly recommended that **you do not** use tanker in production environments. The purpose of this project is to setup a development environment the quickest way. After that the deployment of your POC must be done with a secure Kubernetes Cluster using one of the following tools: `kops` or `kubeadm`  

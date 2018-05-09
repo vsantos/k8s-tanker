@@ -120,5 +120,7 @@ for app in ${KUBE_APPS}; do
         fowardPortHostMinikube 'wordpress' "${WORDPRESS_SAMPLE_PORT}"
     fi
 
-    fowardPortHostMinikube 'dashboard' "${MINIKUBE_DASHBOARD_PORT}"
+    if [[ "${EXPOSE_DASHBOARD}" ]]; then
+        fowardPortHostMinikube 'dashboard' "${MINIKUBE_DASHBOARD_PORT}"
+    fi
 done
