@@ -21,7 +21,7 @@ The following diagram makes a little more clean the interaction between internal
 Make sure that your machine follows the requisites:
 
 - Linux Mint 18.3 - Sylvia (100% working scenario for a fresh installation)
-- 4 GB or more of RAM (it needs to handle the virtualization and k8s-apps as well)
+- 4 GB or more of **free** RAM (it needs to handle the virtualization and k8s-apps as well)
 - 2 CPUs or more
 - Network connection
 
