@@ -20,7 +20,7 @@ The following diagram makes a little more clean the interaction between internal
 
 Make sure that your machine follows the requisites:
 
-- Ubuntu 18.04 or superior (there is a libvirt's group limitation that requires specific configuration by version, so it's better to stick with it)
+- Linux Mint 18.03 - Sylvia (100% working scenario for a fresh installation)
 - 3 GB or more of RAM (it needs to handle the virtualization as well)
 - 2 CPUs or more
 
