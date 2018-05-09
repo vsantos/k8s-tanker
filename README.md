@@ -20,7 +20,7 @@ The following diagram makes a little more clean the interaction between internal
 
 Make sure that your machine follows the requisites:
 
-- Linux Mint 18.03 - Sylvia (100% working scenario for a fresh installation)
+- Linux Mint 18.3 - Sylvia (100% working scenario for a fresh installation)
 - 3 GB or more of RAM (it needs to handle the virtualization as well)
 - 2 CPUs or more
 
