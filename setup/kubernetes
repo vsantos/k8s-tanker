@@ -77,7 +77,6 @@ if [[ "${MINIKUBE_PATH}" ]]; then
     logger 'INFO' "${MINIKUBE_PKG_MSG}"
 else
     logger 'INFO' 'Could not find minikube installation, triggering installation..'
-    MINIKUBE_CLIENT_VERSION='v0.26.1'
     curl -sSLo minikube https://storage.googleapis.com/minikube/releases/"${MINIKUBE_CLIENT_VERSION}"/minikube-linux-amd64 && \
         "${ROOT_PREFFIX}" chmod +x minikube && \
         "${ROOT_PREFFIX}" mv minikube /usr/local/bin/
@@ -87,7 +86,12 @@ fi
 
 # == K8S CLUSTER SETUP ==
 logger 'INFO' 'Ready to start minikube k8s local cluster'
-minikube start --vm-driver ${MINIKUBE_DRIVER}
+
+if [[ "${KUBERNETES_RBAC}" ]]; then
+MINIKUBE_EXTRA_OPTS='--extra-config=apiserver.GenericServerRunOptions.AuthorizationMode=RBAC --extra-config=apiserver.GenericServerRunOptions.AuthorizationRBAC,SuperUser=minikube'
+fi
+
+minikube start --vm-driver "${MINIKUBE_DRIVER}" "${MINIKUBE_EXTRA_OPTS}"
 kubectl cluster-info
 
 MINIKUBE_IP=$(minikube ip)
