@@ -38,7 +38,7 @@ spec:
         - name: WORDPRESS_DB_HOST
           value: wordpress-mysql
         - name: WORDPRESS_DB_PASSWORD
-          value: idwall
+          value: dbpass
         ports:
         - containerPort: 80
           name: wordpress
