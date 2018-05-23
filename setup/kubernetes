@@ -88,7 +88,7 @@ fi
 logger 'INFO' 'Ready to start minikube k8s local cluster'
 
 if [[ "${KUBERNETES_RBAC}" ]]; then
-MINIKUBE_EXTRA_OPTS='--extra-config=apiserver.GenericServerRunOptions.AuthorizationMode=RBAC --extra-config=apiserver.GenericServerRunOptions.AuthorizationRBAC,SuperUser=minikube'
+    MINIKUBE_EXTRA_OPTS='--extra-config=apiserver.GenericServerRunOptions.AuthorizationMode=RBAC --extra-config=apiserver.GenericServerRunOptions.AuthorizationRBAC,SuperUser=minikube'
 fi
 
 minikube start --vm-driver "${MINIKUBE_DRIVER}" "${MINIKUBE_EXTRA_OPTS}"

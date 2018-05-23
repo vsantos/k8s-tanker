@@ -59,7 +59,7 @@ By the default, the kubernetes dashboard will be exposed to the host as `localho
 
 ## Security
 
-It's highly recommended that **you do not** use tanker in production environments. The purpose of this project is to setup a development environment the quickest way. After that the deployment of your POC must be done with a secure Kubernetes Cluster using one of the following tools: `kops` or `kubeadm`  
+It's highly recommended that **you do not** use tanker in production environments. The purpose of this project is to setup a development environment the quickest way possible. After that the deployment of your POC must be done with a secure Kubernetes Cluster using one of the following tools: `kops`, `kubeadm` or similar   
 
 ## Troubleshooting  
 
